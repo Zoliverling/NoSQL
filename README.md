@@ -17,18 +17,34 @@ Fun Commands: Provides weather updates for cities, random facts, and user info r
 To run the project, you need to have:
     Python 3.x installed
     Redis server installed and running locally or accessible remotely
-    Docker containers installed and running locally
+    Docker installed and running locally
 
 ## Installation
 
 1. Clone the repository
+```sh
+git clone https://github.com/your-username/realtime-chatbot.git
+cd realtime-chatbot
+```
 
 2. Modify the volume in .yml file to match your local file path.
+```sh
+:/usr/ds5760
+```
 
-3. Using Docker-compose up to mont the required python and redis packages.
+3. Ensure you Docker is running locally. Using Docker-compose up to mont the required python and redis packages.
+```sh
+docker-compose up
+```
 
-4. Open a new tab, run docker exec -it {your redis name in .yml file} redis-cli;
+4. Open a new tab, run following command to access to redis-cli and monitor the activies while chatting.
+```sh
+docker exec -it {your redis name in .yml file} redis-cli
+monitor
+```
 
-5. Open a new tab, run docker exec -it {your python name in .yml file} bash;
-
-6. Python mp1_template.py
+5. Open a new tab, run following command to access to python and run the .py file.
+```sh
+docker exec -it {your python name in .yml file} bash
+python mp1_template.py
+```
