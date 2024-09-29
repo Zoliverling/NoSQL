@@ -24,7 +24,6 @@ To run the project, you need to have:
 1. Clone the repository
 ```sh
 git clone https://github.com/your-username/realtime-chatbot.git
-cd realtime-chatbot
 ```
 
 2. Modify the volume in .yml file to match your local file path.
@@ -46,5 +45,5 @@ monitor
 5. Open a new tab, run following command to access to python and run the .py file.
 ```sh
 docker exec -it {your python name in .yml file} bash
-python mp1_template.py
+python chatbot.py
 ```
