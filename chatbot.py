@@ -25,21 +25,23 @@ class Chatbot:
         print(intro)
 
     def identify(self, username, age, gender, location):
+        # Identify the user with the provided information
         user_key = f"user:{username}"
         self.client.hset(user_key, mapping={
             "username": username,
-            "age": age,
+            "age": age, 
             "gender": gender,
             "location": location
         })
         self.username = username
 
-        self.client.sadd("identified_users", username)
+        self.client.sadd("identified_users", username) # Add the username to the set of identified users
         print("User identified successfully.")
     
     def get_identified_users(self):
-        identified_users = self.client.smembers("identified_users")
-        if identified_users:
+        # Get the list of identified users
+        identified_users = self.client.smembers("identified_users") # Get the set of identified users from Redis
+        if identified_users: # If identified users are found, print the list of identified users
             print("Identified users:")
             for user in identified_users:
                 print(user)
@@ -49,50 +51,49 @@ class Chatbot:
     def switch_user(self, username):
         # Switch the user to the specified username
         user_key = f"user:{username}"
-        user_info = self.client.hgetall(user_key)
-        if not user_info:
+        user_info = self.client.hgetall(user_key) # Get the user information from Redis
+        if not user_info: # If the user information is not found, return a message
             print(f"User {username} not found. Please identify yourself first.")
             return
         
-        if self.username:
+        if self.username: # If the user is already identified, switch the user
             print(f"Switching from {self.username} to {username}.")
-
         else:
             print(f"Switching to {username}.")
         
-        self.username = username
+        self.username = username # Set the username to the new username
         print(f"User switched to {username} successfully.")
 
     # Join and Leave Channel Operation
     def join_channel(self, channel):
-        # Join a channel
+        # If the channel is not already subscribed, subscribe to the channel
         if channel not in self.subscribed_channels:
-            self.pubsub.subscribe(channel)
-            self.subscribed_channels.append(channel)
+            self.pubsub.subscribe(channel) # Subscribe to the channel
+            self.subscribed_channels.append(channel) # Add the channel to the list of subscribed channels
             print(f"Subscribed to channel: {channel}")
-        else:
+        else: # If the channel is already subscribed, return a message
             print(f"Already subscribed to channel: {channel}")
         
     def leave_channel(self, channel):
-        # Leave a channel
+        # If the channel is subscribed, unsubscribe from the channel
         if channel in self.subscribed_channels:
-            self.pubsub.unsubscribe(channel)
-            self.subscribed_channels.remove(channel)
+            self.pubsub.unsubscribe(channel) # Unsubscribe from the channel
+            self.subscribed_channels.remove(channel) # Remove the channel from the list of subscribed channels
             print(f"Unsubscribed from channel: {channel}") 
-        else:
+        else: # If the channel is not subscribed, return a message
             print(f"Not subscribed to channel: {channel}")
 
     # Store and Get Chat History
     def store_chat_history(self, username, message):
         # Store the chat history for the specified user
         chat_key = f"chat_history:{username}"
-        self.client.lpush(chat_key, message)
+        self.client.lpush(chat_key, message) # Store the message in the chat history list in Redis
         print("Chat history stored successfully.")
     
     def get_chat_history(self, username):
         # Get the chat history for the specified user
         chat_key = f"chat_history:{username}"
-        chat_history = self.client.lrange(chat_key, 0, -1)
+        chat_history = self.client.lrange(chat_key, 0, -1) # Get the chat history list from Redis
         if chat_history:
             print(f"Chat history for {username}:")
             for idx, message in enumerate(chat_history, 1):
@@ -108,14 +109,14 @@ class Chatbot:
             "from": self.username,
             "message": message
         }
-        self.client.publish(channel, json.dumps(message_obj))
+        self.client.publish(channel, json.dumps(message_obj)) # Publish the message to the channel using Redis
 
-        self.store_chat_history(self.username, message)
+        self.store_chat_history(self.username, message) # Store the chat history for the user after sending the message in Redis
 
     def read_message(self, channel):
         # Read messages from a channel
         print(f"Reading messages from channel: {channel} ...")
-        time_out = 30
+        time_out = 30 # Set a timeout of 30 seconds
         start_time = time.time() 
         if channel not in self.subscribed_channels:
             print(f"Channel {channel} not subscribed. Please join the channel first.")
@@ -129,16 +130,16 @@ class Chatbot:
                     channel = message['channel'].decode('utf-8')
                     print(f"[{channel}] {msg_data['from']}: {msg_data['message']}")
             
-            if time.time() - start_time > time_out:
+            if time.time() - start_time > time_out: #If there is no message for 30 seconds, break the loop
                 break
 
-            time.sleep(0.001)
+            time.sleep(0.001) # Sleep for 1ms before checking for the next message
 
         return
     
     # Special Commands
     def help(self):
-        self.introduce()
+        self.introduce() # Display the list of commands
 
     def store_weather(self, city):
         # Store the weather data for the specified city in Redis
@@ -150,15 +151,16 @@ class Chatbot:
         "description": description               # Randomly selected weather description
         }
          
-        self.client.set(f"weather:{city}", json.dumps(weather_info))
+        self.client.set(f"weather:{city}", json.dumps(weather_info))  # Store the weather data in Redis 
         print(f"Weather information for {city} stored successfully.")
 
     def weather(self, city):
-        weather_data = self.client.get(f"weather:{city}")
+        # Get the weather data for the specified city from Redis
+        weather_data = self.client.get(f"weather:{city}") 
         if weather_data:
             print(f"Weather in {city}: {weather_data}")
         
-        else:
+        else: # If the weather data is not found, store the weather data and get the weather information based on the given city
             self.store_weather(city)
             self.weather(city)
 
