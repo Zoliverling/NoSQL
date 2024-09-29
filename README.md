@@ -6,11 +6,22 @@ This is a simple real-time chatbot application built using Python and Redis. THe
 
 ## Features
 
-Identify Users: Users can identify themselves with their name, age, gender, and location.
-Switch Users: Easily switch between differnt users identificaitons.
-Channel Communication: Users can join channels, send messages, and read messages from the channels they are subscribed to.
-Chat History: The bot stores chat history for each user and allows you to retrieve it later.
-Fun Commands: Provides weather updates for cities, random facts, and user info retrieval.
+### Identify Users
+
+Users can identify themselves with their name, age, gender, and location.
+
+### Switch Users
+
+Easily switch between differnt users identificaitons.
+### Channel Communication
+
+Users can join channels, send messages, and read messages from the channels they are subscribed to.
+### Chat History
+
+The bot stores chat history for each user and allows you to retrieve it later.
+
+### Special Commands
+Provides weather updates for cities, random facts, and user info retrieval.
 
 ## Technology Used
 
