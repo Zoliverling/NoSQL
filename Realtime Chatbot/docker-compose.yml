@@ -18,7 +18,7 @@ services:
       depends_on:
         - redis
       volumes:
-        - "/Users/oli/Desktop/ds5760/MiniProject1:/usr/ds5760"
+        - "/Users/oli/Documents/GitHub/NoSQL:/usr/ds5760"
       working_dir: /usr/ds5760/
       networks:
         - app-network
